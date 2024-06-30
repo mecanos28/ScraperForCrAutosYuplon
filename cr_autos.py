@@ -271,29 +271,31 @@ def merge_dataframes(new_car_details, used_car_details, filename):
 
 
 def main():
-    # Obtener y guardar detalles de carros nuevos
-    new_car_ids = fetch_new_car_ids()
-    new_car_details_list = fetch_car_details(new_car_ids,
-                                             "https://crautos.com/autosnuevos/cardetail.cfm?c=")
-    save_to_excel(new_car_details_list, 'new_car_details.xlsx')
-
-    # Obtener y guardar detalles de carros usados
-    used_car_ids = fetch_used_car_ids()
-    used_car_details_list = fetch_car_details(used_car_ids,
-                                              "https://crautos.com/autosusados/cardetail.cfm?c=",
-                                              is_used=True)
-    save_to_excel(used_car_details_list, 'used_car_details.xlsx')
-
-    # Fusionar dataframes y guardar en un archivo Excel combinado
-    merge_dataframes(new_car_details_list, used_car_details_list, 'combined_car_details.xlsx')
+    # # Obtener y guardar detalles de carros nuevos
+    # new_car_ids = fetch_new_car_ids()
+    # new_car_details_list = fetch_car_details(new_car_ids,
+    #                                          "https://crautos.com/autosnuevos/cardetail.cfm?c=")
+    # save_to_excel(new_car_details_list, 'new_car_details.xlsx')
+    #
+    # # Obtener y guardar detalles de carros usados
+    # used_car_ids = fetch_used_car_ids()
+    # used_car_details_list = fetch_car_details(used_car_ids,
+    #                                           "https://crautos.com/autosusados/cardetail.cfm?c=",
+    #                                           is_used=True)
+    # save_to_excel(used_car_details_list, 'used_car_details.xlsx')
+    #
+    # # Fusionar dataframes y guardar en un archivo Excel combinado
+    # merge_dataframes(new_car_details_list, used_car_details_list, 'combined_car_details.xlsx')
 
     # Cargar y limpiar los datos combinados
     combined_df = da.load_data('combined_car_details.xlsx')
-    combined_df = da.clean_data(combined_df)
+    combined_df = da.clean_data_yuplon(combined_df)
 
     # Graficar tendencias
     da.plot_average_price_by_year(combined_df)
     da.plot_most_common_models(combined_df, top_n=10)
+    da.plot_most_expensive_models(combined_df, top_n=10)
+    da.plot_cheapest_models(combined_df, top_n=10)
 
 
 if __name__ == "__main__":
