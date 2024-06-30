@@ -9,10 +9,9 @@ import pandas as pd
 import data_analysis as da
 
 def extract_campaign_details(driver):
-    # Extract the main offer title
+    # Extraer el título de la oferta principal
     main_offer = driver.find_element(By.CSS_SELECTOR, "span.text-3xl").text
 
-    # Extract additional details using provided XPaths
     calificacion = driver.find_element(By.XPATH,
                                        "//*[@id='root']/div[4]/section/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/span").text
     vendidas = driver.find_element(By.XPATH,
@@ -20,7 +19,7 @@ def extract_campaign_details(driver):
 
     valido_para_redimir_text = driver.find_element(By.XPATH,
                                                    "//*[@id='root']/div[4]/section/div[1]/div[3]/div[3]/div/ol/li[1]").text
-    # Handling different date formats
+    # Manejo de diferentes formatos de fecha
     if "del " in valido_para_redimir_text and " al " in valido_para_redimir_text:
         start_date = valido_para_redimir_text.split("del ")[1].split(" al ")[0].strip()
         end_date = valido_para_redimir_text.split(" al ")[1].split(".")[0].strip()
@@ -31,10 +30,10 @@ def extract_campaign_details(driver):
         date = valido_para_redimir_text.split("el día del evento:")[1].strip().split(".")[0]
         start_date = end_date = date
     else:
-        # Handle other date format
+        # Manejar otro formato de fecha
         start_date = end_date = valido_para_redimir_text.split(" ")[-1].strip().split(".")[0]
 
-    # Extract sub-offer details
+    # Extraer detalles de la sub-oferta
     sub_offers_elements = driver.find_elements(By.CSS_SELECTOR, "div.pb-10")
     sub_offers = []
 
@@ -64,68 +63,67 @@ def extract_campaign_details(driver):
     return sub_offers
 
 def main():
-    # Get the current directory of the script
+    # Obtener el directorio actual del script
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Construct the relative path to the ChromeDriver executable
+    # Construir la ruta relativa al ejecutable de ChromeDriver
     chromedriver_path = os.path.join(current_dir, "chromedriver-mac-arm64/chromedriver")
 
-    # Print paths for debugging
+    # Imprimir rutas para depuración
     print(f"Using ChromeDriver path: {chromedriver_path}")
 
-    # Initialize the WebDriver with custom Chrome binary
+    # Inicializar el WebDriver con binario de Chrome personalizado
     service = ChromeService(executable_path=chromedriver_path)
     driver = webdriver.Chrome(service=service)
 
 
     try:
-        # Open the Yuplon website
+        # Abrir el sitio web de Yuplon
         driver.get("https://www.yuplon.com/")
 
-        # Wait for the page to load
+        # Esperar a que la página cargue
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "grid-cols-1"))
         )
 
-        # Scroll to load more items if needed
+        # Desplazarse para cargar más elementos si es necesario
         last_height = driver.execute_script("return document.body.scrollHeight")
         details_links = set()
 
         while True:
-            # Scroll to the bottom
+            # Desplazarse hasta el final
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(5)  # Adjust this if necessary for the site to load more items
+            time.sleep(5)  # Ajustar esto si es necesario para que el sitio cargue más elementos
 
-            # Find all 'Ver Detalles' links
+            # Encontrar todos los enlaces 'Ver Detalles'
             details_elements = driver.find_elements(By.XPATH,
                                                     "//a[contains(text(), 'Ver Detalles')]")
             for element in details_elements:
                 details_links.add(element.get_attribute('href'))
 
-            # Calculate new scroll height and compare with last scroll height
+            # Calcular nueva altura de desplazamiento y comparar con la última altura
             new_height = driver.execute_script("return document.body.scrollHeight")
             if new_height == last_height:
                 break
             last_height = new_height
 
-        # Print the count of 'Ver Detalles' links
-        print(f"Number of 'Ver Detalles' links found: {len(details_links)}")
+        # Imprimir el recuento de enlaces 'Ver Detalles'
+        print(f"Número de enlaces 'Ver Detalles' encontrados: {len(details_links)}")
         print(details_links)
 
-        # Visit each link and extract campaign details
+        # Visitar cada enlace y extraer detalles de la campaña
         all_campaign_data = []
-        test = ['https://www.yuplon.com/campaign/5247', 'https://www.yuplon.com/campaign/5222', 'https://www.yuplon.com/campaign/5301', 'https://www.yuplon.com/campaign/5196', 'https://www.yuplon.com/campaign/5299', 'https://www.yuplon.com/campaign/5298', 'https://www.yuplon.com/campaign/5283', 'https://www.yuplon.com/campaign/5273', 'https://www.yuplon.com/campaign/5285', 'https://www.yuplon.com/campaign/5271', 'https://www.yuplon.com/campaign/5297', 'https://www.yuplon.com/campaign/5228', 'https://www.yuplon.com/campaign/5241', 'https://www.yuplon.com/campaign/5308', 'https://www.yuplon.com/campaign/5294', 'https://www.yuplon.com/campaign/5263', 'https://www.yuplon.com/campaign/5300', 'https://www.yuplon.com/campaign/5270', 'https://www.yuplon.com/campaign/5256', 'https://www.yuplon.com/campaign/5289', 'https://www.yuplon.com/campaign/5269', 'https://www.yuplon.com/campaign/5288', 'https://www.yuplon.com/campaign/5278', 'https://www.yuplon.com/campaign/5296', 'https://www.yuplon.com/campaign/5305', 'https://www.yuplon.com/campaign/5275', 'https://www.yuplon.com/campaign/5259', 'https://www.yuplon.com/campaign/5265', 'https://www.yuplon.com/campaign/5276', 'https://www.yuplon.com/campaign/5268', 'https://www.yuplon.com/campaign/5309', 'https://www.yuplon.com/campaign/5287', 'https://www.yuplon.com/campaign/5286', 'https://www.yuplon.com/campaign/5274', 'https://www.yuplon.com/campaign/5277', 'https://www.yuplon.com/campaign/5315', 'https://www.yuplon.com/campaign/5251', 'https://www.yuplon.com/campaign/5249', 'https://www.yuplon.com/campaign/5312', 'https://www.yuplon.com/campaign/5279', 'https://www.yuplon.com/campaign/5224', 'https://www.yuplon.com/campaign/5266', 'https://www.yuplon.com/campaign/5306', 'https://www.yuplon.com/campaign/5272', 'https://www.yuplon.com/campaign/5311', 'https://www.yuplon.com/campaign/4977', 'https://www.yuplon.com/campaign/5284', 'https://www.yuplon.com/campaign/5302', 'https://www.yuplon.com/campaign/5295', 'https://www.yuplon.com/campaign/5227', 'https://www.yuplon.com/campaign/5250', 'https://www.yuplon.com/campaign/5282', 'https://www.yuplon.com/campaign/5238', 'https://www.yuplon.com/campaign/5257', 'https://www.yuplon.com/campaign/5174', 'https://www.yuplon.com/campaign/5316', 'https://www.yuplon.com/campaign/5211', 'https://www.yuplon.com/campaign/5242', 'https://www.yuplon.com/campaign/5261', 'https://www.yuplon.com/campaign/5267', 'https://www.yuplon.com/campaign/5264', 'https://www.yuplon.com/campaign/5319', 'https://www.yuplon.com/campaign/5304', 'https://www.yuplon.com/campaign/5317', 'https://www.yuplon.com/campaign/5314', 'https://www.yuplon.com/campaign/5281']
-        for link in test:
-            print(f"Obteniendo detalles de oferta: {link}")
+        for link in details_links:
+            print(f"Obteniendo detalles de oferta: {details_links}")
             driver.get(link)
-            time.sleep(5)  # Wait for the page to load fully
+            time.sleep(5)  # Esperar a que la página cargue completamente
             campaign_data = extract_campaign_details(driver)
             all_campaign_data.extend(campaign_data)
 
-        # Save the campaign data to an Excel file
+        # Guardar los datos de la campaña en un archivo Excel
         df = pd.DataFrame(all_campaign_data)
         df.to_excel('campaign_data.xlsx', index=False)
-        print("Campaign details saved to campaign_data.xlsx")
+        print("Detalles de la campaña guardados en campaign_data.xlsx")
 
         # Graficar tendencias
         campaign_data = da.load_data('campaign_data.xlsx')
@@ -137,7 +135,7 @@ def main():
         da.plot_least_expensive_offers(campaign_data)
 
     finally:
-        # Close the WebDriver
+        # Cerrar el WebDriver
         driver.quit()
 
 
