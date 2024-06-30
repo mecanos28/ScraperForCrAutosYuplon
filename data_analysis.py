@@ -13,17 +13,10 @@ def load_data(file_path):
 def clean_data(df):
     # Eliminar filas donde "Precio" es "ND"
     df = df[df['Precio'] != '$ND'].copy()
-
     # Convertir el precio a float después de eliminar caracteres no deseados
-    df['Precio'] = df['Precio'].replace('[\$,]', '', regex=True)
-
-    # Identificar y eliminar filas donde "Precio" no es numérico
-    df = df[pd.to_numeric(df['Precio'], errors='coerce').notnull()]
-    df['Precio'] = df['Precio'].astype(float)
-
+    df.loc[:, 'Precio'] = df['Precio'].replace('[\$,]', '', regex=True).astype(float)
     # Convertir el año a entero
-    df['Año'] = df['Año'].astype(int)
-
+    df.loc[:, 'Año'] = df['Año'].astype(int)
     return df
 
 def get_average_price_by_year(df):
