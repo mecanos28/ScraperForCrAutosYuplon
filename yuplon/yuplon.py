@@ -139,7 +139,7 @@ def main():
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Construir la ruta relativa al ejecutable de ChromeDriver
-    chromedriver_path = os.path.join(current_dir, "chromedriver-mac-arm64/chromedriver")
+    chromedriver_path = os.path.join(current_dir, "../chromedriver-mac-arm64/chromedriver")
 
     # Imprimir rutas para depuración
     print(f"Using ChromeDriver path: {chromedriver_path}")
@@ -163,7 +163,7 @@ def main():
 
     scraper.close_driver()
 
-    data_manager = DataManager('data/campaign_data.xlsx')
+    data_manager = DataManager('../data/campaign_data.xlsx')
     data_manager.save_to_excel(all_campaign_data)
     data_manager.analyze_data()
 
