@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import data_analysis as da
 
-FROM_YEAR = "2020"
+FROM_YEAR = "2024"
 
 class WebScraper:
     def __init__(self, driver_path):
@@ -238,20 +238,20 @@ def main():
     new_car_scraper = NewCarScraper(driver_path=chromedriver_path)
     new_car_ids = new_car_scraper.fetch_car_ids()
     new_car_details_list = CarDetailsFetcher.fetch_car_details(new_car_ids, "https://crautos.com/autosnuevos/cardetail.cfm?c=")
-    DataManager.save_to_excel(new_car_details_list, '../data/new_car_details.xlsx')
+    DataManager.save_to_excel(new_car_details_list, 'new_car_details.xlsx')
 
     # Obtener y guardar detalles de carros usados
     used_car_scraper = UsedCarScraper(driver_path=chromedriver_path)
     used_car_ids = used_car_scraper.fetch_car_ids()
     used_car_details_list = CarDetailsFetcher.fetch_car_details(used_car_ids, "https://crautos.com/autosusados/cardetail.cfm?c=", is_used=True)
-    DataManager.save_to_excel(used_car_details_list, '../data/used_car_details.xlsx')
+    DataManager.save_to_excel(used_car_details_list, 'used_car_details.xlsx')
 
     # Fusionar DataFrames y guardar en un archivo Excel combinado
     DataManager.merge_dataframes(new_car_details_list, used_car_details_list,
-                                 '../data/combined_car_details.xlsx')
+                                 'combined_car_details.xlsx')
 
     # Cargar y limpiar los datos combinados
-    combined_df = da.load_data('../data/combined_car_details.xlsx')
+    combined_df = da.load_data('combined_car_details.xlsx')
     combined_df = da.clean_data(combined_df)
 
     # Graficar tendencias

@@ -163,7 +163,7 @@ def main():
 
     scraper.close_driver()
 
-    data_manager = DataManager('../data/campaign_data.xlsx')
+    data_manager = DataManager('campaign_data.xlsx')
     data_manager.save_to_excel(all_campaign_data)
     data_manager.analyze_data()
 
